@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/multiformats/go-multiaddr"
 )
 
@@ -12,6 +13,7 @@ func webHandler(w http.ResponseWriter, r *http.Request) {
 	doc.Title = fmt.Sprintf("Bootstrap peer for rendezvous %s", rendezvous)
 	doc.H1 = fmt.Sprintf(string(h.ID().Pretty()))
 	doc.Addrs = h.Addrs()
+	doc.Peers = h.Peerstore().PeersWithAddrs()
 
 	fmt.Fprint(w, doc.String())
 }
@@ -20,6 +22,7 @@ type Document struct {
 	Title string
 	H1    string
 	Addrs []multiaddr.Multiaddr
+	Peers peer.IDSlice
 }
 
 func New() *Document {
@@ -39,9 +42,17 @@ func (d *Document) String() string {
 
 	// Iterate over the Addrs slice and append each address to the html string
 	if len(d.Addrs) > 0 {
-		// html += "<ul>"
+		html += "<h2>Addresses</h2>\n"
 		for _, addr := range d.Addrs {
 			listItem := addr.String() + "<br>"
+			html += listItem
+		}
+	}
+
+	if len(d.Peers) > 0 {
+		html += "<h2>Peers</h2>\n"
+		for _, peer := range d.Peers {
+			listItem := peer.String() + "<br>"
 			html += listItem
 		}
 	}

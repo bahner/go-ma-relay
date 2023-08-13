@@ -25,11 +25,6 @@ func main() {
 	wg := &sync.WaitGroup{}
 
 	// Start the libp2p node
-	// log.Debug("Starting libp2p node...")
-	// addrs, err := listenAddrs(listenPort)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 	h, err = libp2p.New(libp2p.ListenAddrStrings(getListenAddrStrings(listenPort)...))
 	if err != nil {
 		log.Fatal(err)

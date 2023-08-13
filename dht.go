@@ -16,7 +16,11 @@ func initDHT(ctx context.Context, wg *sync.WaitGroup, h host.Host) (*dht.IpfsDHT
 
 	defer wg.Done()
 
-	kademliaDHT, err := dht.New(ctx, h, dht.Mode(dht.ModeServer))
+	options := []dht.Option{
+		dht.Mode(dht.ModeServer),
+	}
+
+	kademliaDHT, err := dht.New(ctx, h, options...)
 	if err != nil {
 		log.Error("Failed to create Kademlia DHT.")
 		return nil, err
