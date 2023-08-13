@@ -1,0 +1,13 @@
+---
+
+services:
+  go-dht-bootstrap-peer:
+    image: docker.io/bahner/go-dht-bootstrap-peer
+    network_mode: "host"
+    environment:
+      - GO_DHT_SERVER_LOG_LEVEL
+      - GO_DHT_SERVER_RENDEZVOUS
+      - GO_DHT_SERVER_HTTP_PORT
+      - GO_DHT_SERVER_HTTP_ADDR
+      - GO_DHT_SERVER_LISTEN_PORT
+
