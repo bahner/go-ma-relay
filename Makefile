@@ -37,6 +37,12 @@ clean:
 distclean: clean
 	rm -f $(shell git ls-files --exclude-standard --others)
 
+openwrt: GOOS=linux
+openwrt: GOARCH=arm64
+openwrt:
+	$(GO) build -o $(NAME)
+	
+
 image:
 	docker build \
 	--build-arg BUILD_IMAGE=$(BUILD_IMAGE) \
