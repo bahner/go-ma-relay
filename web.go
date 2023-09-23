@@ -11,7 +11,7 @@ import (
 func webHandler(w http.ResponseWriter, r *http.Request) {
 	doc := New()
 	doc.Title = fmt.Sprintf("Bootstrap peer for rendezvous %s", rendezvous)
-	doc.H1 = fmt.Sprintf(string(h.ID().Pretty()))
+	doc.H1 = fmt.Sprintf("%s@%s", rendezvous, (h.ID().Pretty()))
 	doc.Addrs = h.Addrs()
 	doc.Peers = h.Peerstore().PeersWithAddrs()
 
