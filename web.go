@@ -4,25 +4,50 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/multiformats/go-multiaddr"
 )
 
+// Assuming you have initialized variables like `h` and `rendezvous` somewhere in your main function or globally
+
 func webHandler(w http.ResponseWriter, r *http.Request) {
+	allConnected := getLivePeerIDs(h)
+	peersWithRendez, otherPeers := categorizePeers(allConnected)
+
 	doc := New()
 	doc.Title = fmt.Sprintf("Bootstrap peer for rendezvous %s", rendezvous)
 	doc.H1 = fmt.Sprintf("%s@%s", rendezvous, (h.ID().Pretty()))
 	doc.Addrs = h.Addrs()
-	doc.Peers = h.Peerstore().PeersWithAddrs()
+	doc.AllConnectedPeers = allConnected
+	doc.PeersWithSameRendez = peersWithRendez
+	doc.OtherPeers = otherPeers
 
 	fmt.Fprint(w, doc.String())
 }
 
+func getLivePeerIDs(h host.Host) peer.IDSlice {
+	peerSet := make(map[peer.ID]struct{})
+
+	for _, conn := range h.Network().Conns() {
+		peerSet[conn.RemotePeer()] = struct{}{}
+	}
+
+	peers := make(peer.IDSlice, 0, len(peerSet))
+	for p := range peerSet {
+		peers = append(peers, p)
+	}
+
+	return peers
+}
+
 type Document struct {
-	Title string
-	H1    string
-	Addrs []multiaddr.Multiaddr
-	Peers peer.IDSlice
+	Title               string
+	H1                  string
+	Addrs               []multiaddr.Multiaddr
+	PeersWithSameRendez peer.IDSlice
+	AllConnectedPeers   peer.IDSlice
+	OtherPeers          peer.IDSlice
 }
 
 func New() *Document {
@@ -40,23 +65,41 @@ func (d *Document) String() string {
 	}
 	html += "<hr>"
 
-	// Iterate over the Addrs slice and append each address to the html string
-	if len(d.Addrs) > 0 {
-		html += "<h2>Addresses</h2>\n"
-		for _, addr := range d.Addrs {
-			listItem := addr.String() + "<br>"
-			html += listItem
+	// Info leak? Not really important anyways.
+	// // Addresses
+	// if len(d.Addrs) > 0 {
+	// 	html += "<h2>Addresses</h2>\n<ul>"
+	// 	for _, addr := range d.Addrs {
+	// 		html += "<li>" + addr.String() + "</li>"
+	// 	}
+	// 	html += "</ul>"
+	// }
+
+	// Peers with Same Rendezvous
+	if len(d.PeersWithSameRendez) > 0 {
+		html += fmt.Sprintf("<h2>Discovered peers (%d):</h2>\n<ul>", len(d.PeersWithSameRendez))
+		for _, peer := range d.PeersWithSameRendez {
+			html += "<li>" + peer.String() + "</li>"
 		}
+		html += "</ul>"
+	}
+	// All Connected Peers
+	if len(d.AllConnectedPeers) > 0 {
+		html += fmt.Sprintf("<h2>libp2p Network Peers (%d):</h2>\n<ul>", len(d.AllConnectedPeers))
+		for _, peer := range d.AllConnectedPeers {
+			html += "<li>" + peer.String() + "</li>"
+		}
+		html += "</ul>"
 	}
 
-	if len(d.Peers) > 0 {
-		peersStr := fmt.Sprintf("<h2>Peers (%d)</h2>\n", len(d.Peers))
-		html += peersStr
-		for _, peer := range d.Peers {
-			listItem := peer.String() + "<br>"
-			html += listItem
-		}
-	}
+	// // Other Peers
+	// if len(d.OtherPeers) > 0 {
+	// 	html += fmt.Sprintf("<h2>Other Peers (%d)</h2>\n<ul>", len(d.OtherPeers))
+	// 	for _, peer := range d.OtherPeers {
+	// 		html += "<li>" + peer.String() + "</li>"
+	// 	}
+	// 	html += "</ul>"
+	// }
 
 	html += "</body>\n</html>"
 	return html

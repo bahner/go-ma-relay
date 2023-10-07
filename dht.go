@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 	"github.com/libp2p/go-libp2p/core/host"
@@ -12,8 +13,12 @@ import (
 	dutil "github.com/libp2p/go-libp2p/p2p/discovery/util"
 )
 
-func initDHT(ctx context.Context, wg *sync.WaitGroup, h host.Host) (*dht.IpfsDHT, error) {
+var (
+	connectedPeers = make(map[string]struct{})
+	peerMutex      sync.Mutex
+)
 
+func initDHT(ctx context.Context, wg *sync.WaitGroup, h host.Host) (*dht.IpfsDHT, error) {
 	defer wg.Done()
 
 	options := []dht.Option{
@@ -46,9 +51,7 @@ func initDHT(ctx context.Context, wg *sync.WaitGroup, h host.Host) (*dht.IpfsDHT
 		log.Debugf("Bootstrapping to peer: %s", peerinfo.ID.Pretty())
 
 		go func(pInfo peer.AddrInfo) {
-
 			log.Debugf("Attempting connection to peer: %s", pInfo.ID.Pretty())
-
 			if err := h.Connect(ctx, pInfo); err != nil {
 				log.Warnf("Bootstrap warning: %v", err)
 			}
@@ -58,28 +61,40 @@ func initDHT(ctx context.Context, wg *sync.WaitGroup, h host.Host) (*dht.IpfsDHT
 	return kademliaDHT, nil
 }
 
-func discoverDHTPeers(ctx context.Context, wg *sync.WaitGroup, dhtInstance *dht.IpfsDHT, rendezvousString string) error {
-
-	defer wg.Done()
-
+func discoverDHTPeers(ctx context.Context, dhtInstance *dht.IpfsDHT, rendezvousString string) error {
 	routingDiscovery := drouting.NewRoutingDiscovery(dhtInstance)
 	dutil.Advertise(ctx, routingDiscovery, rendezvousString)
 
 	log.Infof("Starting DHT peer discovery for rendezvous string: %s", rendezvousString)
 
-	retryCount := 0
-
 	for {
+		peerMutex.Lock()
+		currentPeerCount := len(connectedPeers)
+		peerMutex.Unlock()
+
+		if currentPeerCount >= highWaterMark {
+			time.Sleep(time.Second * discoverySleep)
+			continue
+		}
 
 		peerChan, err := routingDiscovery.FindPeers(ctx, rendezvousString)
 		if err != nil {
 			return fmt.Errorf("peer discovery error: %w", err)
 		}
 
-		anyConnected := false
 		for peer := range peerChan {
 			if peer.ID == h.ID() {
-				continue // Skip self connection
+				continue
+			}
+
+			peerIDStr := peer.ID.String()
+
+			peerMutex.Lock()
+			_, alreadyConnected := connectedPeers[peerIDStr]
+			peerMutex.Unlock()
+
+			if alreadyConnected {
+				continue
 			}
 
 			err := h.Connect(ctx, peer)
@@ -87,16 +102,38 @@ func discoverDHTPeers(ctx context.Context, wg *sync.WaitGroup, dhtInstance *dht.
 				log.Debugf("Failed connecting to %s, error: %v\n", peer.ID.Pretty(), err)
 			} else {
 				log.Infof("Connected to DHT peer: %s", peer.ID.Pretty())
-				anyConnected = true
+
+				peerMutex.Lock()
+				connectedPeers[peerIDStr] = struct{}{}
+				peerMutex.Unlock()
 			}
 		}
+	}
+}
 
-		if anyConnected {
-			break
-		}
-		retryCount++
-		log.Debugf("Attempts #%d for peer discovery with rendezvous string: %s failed.", retryCount, rendezvousString)
+func getPeersWithSameRendezvous() map[string]struct{} {
+	peerMutex.Lock()
+	defer peerMutex.Unlock()
+
+	// Clone the map to avoid any concurrent modification issues
+	copiedPeers := make(map[string]struct{})
+	for k, v := range connectedPeers {
+		copiedPeers[k] = v
 	}
 
-	return nil
+	return copiedPeers
+}
+
+func categorizePeers(allPeers []peer.ID) (sameRendezvous, other []peer.ID) {
+	rendezvousPeers := getPeersWithSameRendezvous()
+
+	for _, p := range allPeers {
+		peerIDStr := p.String()
+		if _, exists := rendezvousPeers[peerIDStr]; exists {
+			sameRendezvous = append(sameRendezvous, p)
+		} else {
+			other = append(other, p)
+		}
+	}
+	return
 }

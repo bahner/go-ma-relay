@@ -39,10 +39,8 @@ func main() {
 	log.Info("Kademlia DHT bootstrapped successfully.")
 
 	log.Debug("Starting DHT route discovery.")
-	wg.Add(1)
-	go discoverDHTPeers(ctx, wg, dhtInstance, rendezvous)
-	wg.Wait()
-	log.Info("Peer discovery complete")
+	go discoverDHTPeers(ctx, dhtInstance, rendezvous)
+	log.Info("Peer discovery started.")
 
 	http.HandleFunc("/", webHandler)
 

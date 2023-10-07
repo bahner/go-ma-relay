@@ -2,17 +2,34 @@ package main
 
 import (
 	"flag"
+	"time"
 
 	"github.com/sirupsen/logrus"
 	"go.deanishe.net/env"
 )
 
+const (
+	defaultLowWaterMark   int           = 100
+	defaultHighWaterMark  int           = 10000
+	defaultLogLevel       string        = "info"
+	defaultConnMgrGrace   time.Duration = time.Minute * 1
+	defaultListenPort     string        = "4001" // 0 = random
+	defaultHttpAddr       string        = "0.0.0.0"
+	defaultHttpPort       string        = "4000"
+	defaultRendezvous     string        = ""
+	defaultDiscoverySleep time.Duration = time.Second * 10
+)
+
 var (
-	httpAddr   string = env.Get("GO_DHT_SERVER_HTTP_ADDR", "0.0.0.0")
-	httpPort   string = env.Get("GO_DHT_SERVER_HTTP_PORT", "4000")
-	logLevel   string = env.Get("GO_DHT_SERVER_LOG_LEVEL", "info")
-	listenPort string = env.Get("GO_DHT_SERVER_LISTEN_PORT", "4001") // 0 = random
-	rendezvous string = env.Get("GO_DHT_SERVER_RENDEZVOUS", "")
+	discoverySleep     time.Duration = env.GetDuration("GO_DHT_SERVER_DISCOVERY_SLEEP", defaultDiscoverySleep)
+	httpAddr           string        = env.Get("GO_DHT_SERVER_HTTP_ADDR", defaultHttpAddr)
+	httpPort           string        = env.Get("GO_DHT_SERVER_HTTP_PORT", defaultHttpPort)
+	listenPort         string        = env.Get("GO_DHT_SERVER_LISTEN_PORT", defaultListenPort)
+	logLevel           string        = env.Get("GO_DHT_SERVER_LOG_LEVEL", defaultLogLevel)
+	lowWaterMark       int           = env.GetInt("GO_DHT_SERVER_LOW_WATER_MARK", defaultLowWaterMark)
+	highWaterMark      int           = env.GetInt("GO_DHT_SERVER_HIGH_WATER_MARK", defaultHighWaterMark)
+	connmgrGracePeriod time.Duration = env.GetDuration("GO_DHT_SERVER_CONN_MGR_GRACE_PERIOD", defaultConnMgrGrace)
+	rendezvous         string        = env.Get("GO_DHT_SERVER_RENDEZVOUS", "")
 )
 
 var (
@@ -25,6 +42,11 @@ func initConfig() {
 	// Flags - user configurations
 	flag.StringVar(&logLevel, "logLevel", logLevel, "Loglevel to use")
 	flag.StringVar(&rendezvous, "rendezvous", rendezvous, "Unique string to identify group of nodes. Share this with your friends to let them connect with you")
+
+	flag.DurationVar(&discoverySleep, "discoverySleep", discoverySleep, "Sleep duration between peer discovery cycles")
+	flag.IntVar(&lowWaterMark, "lowWaterMark", lowWaterMark, "Low watermark for peer discovery")
+	flag.IntVar(&highWaterMark, "highWaterMark", highWaterMark, "High watermark for peer discovery")
+	flag.DurationVar(&connmgrGracePeriod, "connmgrGracePeriod", connmgrGracePeriod, "Grace period for connection manager")
 
 	flag.StringVar(&httpAddr, "httpAddr", httpAddr, "Address to listen on")
 	flag.StringVar(&httpPort, "httpPort", httpPort, "Listen port for webserver")
