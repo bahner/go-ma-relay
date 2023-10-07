@@ -2,14 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"os"
 	"sync"
 
 	libp2p "github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/host"
-	"github.com/libp2p/go-libp2p/core/peer"
 )
 
 var (
@@ -55,13 +52,4 @@ func main() {
 		log.Fatal(err)
 	}
 
-}
-
-func printErr(m string, args ...interface{}) {
-	fmt.Fprintf(os.Stderr, m, args...)
-}
-
-func shortID(p peer.ID) string {
-	pretty := p.Pretty()
-	return pretty[len(pretty)-8:]
 }

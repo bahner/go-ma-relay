@@ -50,7 +50,8 @@ func (d *Document) String() string {
 	}
 
 	if len(d.Peers) > 0 {
-		html += "<h2>Peers</h2>\n"
+		peersStr := fmt.Sprintf("<h2>Peers (%d)</h2>\n", len(d.Peers))
+		html += peersStr
 		for _, peer := range d.Peers {
 			listItem := peer.String() + "<br>"
 			html += listItem

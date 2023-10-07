@@ -7,10 +7,6 @@ import (
 	"go.deanishe.net/env"
 )
 
-const (
-	name = "go-dht-bootstrap-peer"
-)
-
 var (
 	httpAddr   string = env.Get("GO_DHT_SERVER_HTTP_ADDR", "0.0.0.0")
 	httpPort   string = env.Get("GO_DHT_SERVER_HTTP_PORT", "4000")
@@ -20,9 +16,8 @@ var (
 )
 
 var (
-	httpSocket        string
-	log               *logrus.Logger
-	listenAddrStrings []string
+	httpSocket string
+	log        *logrus.Logger
 )
 
 func initConfig() {
