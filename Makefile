@@ -1,7 +1,7 @@
 #!/usr/bin/make -ef
 
 NAME		= go-dht-bootstrap-peer
-VERSION		= 1.0.1
+VERSION		= 1.0.2dev
 GO_VERSION	= 1.21.1
 
 BUILD_IMAGE	?=golang:$(GO_VERSION)-alpine
@@ -40,7 +40,7 @@ distclean: clean
 openwrt: GOOS=linux
 openwrt: GOARCH=arm64
 openwrt:
-	$(GO) build -o $(NAME)
+	$(GO) build -o arm64-$(NAME)
 	
 
 image:
@@ -52,7 +52,7 @@ image:
 push:
 	docker push $(IMAGE)
 
-release:
+release: image push
 	git tag -a $(VERSION) -m "Release $(VERSION)"
 	git push origin $(VERSION)
 	docker tag $(IMAGE) $(IMAGE):$(VERSION)
