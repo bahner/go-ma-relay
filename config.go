@@ -18,6 +18,7 @@ const (
 	defaultHttpPort       string        = "4000"
 	defaultRendezvous     string        = ""
 	defaultDiscoverySleep time.Duration = time.Second * 10
+	defaultEnableRelay    bool          = false
 )
 
 var (
@@ -30,6 +31,7 @@ var (
 	highWaterMark      int           = env.GetInt("GO_DHT_SERVER_HIGH_WATER_MARK", defaultHighWaterMark)
 	connmgrGracePeriod time.Duration = env.GetDuration("GO_DHT_SERVER_CONN_MGR_GRACE_PERIOD", defaultConnMgrGrace)
 	rendezvous         string        = env.Get("GO_DHT_SERVER_RENDEZVOUS", "")
+	enableRelayService bool          = env.GetBool("GO_DHT_SERVER_ENABLE_RELAY", defaultEnableRelay)
 )
 
 var (
@@ -47,6 +49,8 @@ func initConfig() {
 	flag.IntVar(&lowWaterMark, "lowWaterMark", lowWaterMark, "Low watermark for peer discovery")
 	flag.IntVar(&highWaterMark, "highWaterMark", highWaterMark, "High watermark for peer discovery")
 	flag.DurationVar(&connmgrGracePeriod, "connmgrGracePeriod", connmgrGracePeriod, "Grace period for connection manager")
+
+	flag.BoolVar(&enableRelayService, "enableRelay", enableRelayService, "Enable circuit relay")
 
 	flag.StringVar(&httpAddr, "httpAddr", httpAddr, "Address to listen on")
 	flag.StringVar(&httpPort, "httpPort", httpPort, "Listen port for webserver")

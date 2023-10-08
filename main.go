@@ -21,8 +21,16 @@ func main() {
 	ctx := context.Background()
 	wg := &sync.WaitGroup{}
 
+	options := []libp2p.Option{
+		libp2p.ListenAddrStrings(getListenAddrStrings(listenPort)...),
+	}
+
+	if enableRelayService {
+		options = append(options, libp2p.EnableRelayService())
+	}
+
 	// Start the libp2p node
-	h, err = libp2p.New(libp2p.ListenAddrStrings(getListenAddrStrings(listenPort)...))
+	h, err = libp2p.New(options...)
 	if err != nil {
 		log.Fatal(err)
 	}
