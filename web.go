@@ -55,10 +55,12 @@ func New() *Document {
 }
 
 func (d *Document) String() string {
+
 	html := "<!DOCTYPE html>\n<html>\n<head>\n"
 	if d.Title != "" {
 		html += "<title>" + d.Title + "</title>\n"
 	}
+	html += fmt.Sprintf(`<meta http-equiv="refresh" content="%d">`, int(discoverySleep.Seconds()))
 	html += "</head>\n<body>\n"
 	if d.H1 != "" {
 		html += "<h1>" + d.H1 + "</h1>\n"

@@ -1,7 +1,7 @@
 #!/usr/bin/make -ef
 
 NAME		= go-dht-bootstrap-peer
-VERSION		= 1.0.0
+VERSION		= 1.0.1
 GO_VERSION	= 1.21.1
 
 BUILD_IMAGE	?=golang:$(GO_VERSION)-alpine
