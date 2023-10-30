@@ -2,7 +2,7 @@
 
 NAME		= go-dht-bootstrap-peer
 VERSION		= 1.0.2dev
-GO_VERSION	= 1.21.1
+GO_VERSION	= 
 
 BUILD_IMAGE	?=golang:$(GO_VERSION)-alpine
 GO					?= go$(GO_VERSION)

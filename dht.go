@@ -48,10 +48,10 @@ func initDHT(ctx context.Context, wg *sync.WaitGroup, h host.Host) (*dht.IpfsDHT
 			continue
 		}
 
-		log.Debugf("Bootstrapping to peer: %s", peerinfo.ID.Pretty())
+		log.Debugf("Bootstrapping to peer: %s", peerinfo.ID.String())
 
 		go func(pInfo peer.AddrInfo) {
-			log.Debugf("Attempting connection to peer: %s", pInfo.ID.Pretty())
+			log.Debugf("Attempting connection to peer: %s", pInfo.ID.String())
 			if err := h.Connect(ctx, pInfo); err != nil {
 				log.Warnf("Bootstrap warning: %v", err)
 			}
@@ -99,9 +99,9 @@ func discoverDHTPeers(ctx context.Context, dhtInstance *dht.IpfsDHT, rendezvousS
 
 			err := h.Connect(ctx, peer)
 			if err != nil {
-				log.Debugf("Failed connecting to %s, error: %v\n", peer.ID.Pretty(), err)
+				log.Debugf("Failed connecting to %s, error: %v\n", peer.ID.String(), err)
 			} else {
-				log.Infof("Connected to DHT peer: %s", peer.ID.Pretty())
+				log.Infof("Connected to DHT peer: %s", peer.ID.String())
 
 				peerMutex.Lock()
 				connectedPeers[peerIDStr] = struct{}{}

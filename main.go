@@ -26,6 +26,7 @@ func main() {
 	}
 
 	if enableRelayService {
+		log.Info("Enabling circuit relay service.")
 		options = append(options, libp2p.EnableRelayService())
 	}
 
@@ -34,7 +35,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Info("libp2p node created: ", h.ID().Pretty())
+	log.Info("libp2p node created: ", h.ID().String())
 
 	// Boostrap Kademlia DHT and wait for it to finish.
 	wg.Add(1)

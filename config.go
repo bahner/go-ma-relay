@@ -9,16 +9,16 @@ import (
 )
 
 const (
-	defaultLowWaterMark   int           = 100
-	defaultHighWaterMark  int           = 10000
-	defaultLogLevel       string        = "info"
-	defaultConnMgrGrace   time.Duration = time.Minute * 1
-	defaultListenPort     string        = "4001" // 0 = random
-	defaultHttpAddr       string        = "0.0.0.0"
-	defaultHttpPort       string        = "4000"
-	defaultRendezvous     string        = ""
-	defaultDiscoverySleep time.Duration = time.Second * 10
-	defaultEnableRelay    bool          = false
+	defaultLowWaterMark       int           = 100
+	defaultHighWaterMark      int           = 10000
+	defaultLogLevel           string        = "info"
+	defaultConnMgrGrace       time.Duration = time.Minute * 1
+	defaultListenPort         string        = "4001" // 0 = random
+	defaultHttpAddr           string        = "0.0.0.0"
+	defaultHttpPort           string        = "4000"
+	defaultRendezvous         string        = ""
+	defaultDiscoverySleep     time.Duration = time.Second * 10
+	defaultEnableRelayService bool          = false
 )
 
 var (
@@ -31,7 +31,7 @@ var (
 	highWaterMark      int           = env.GetInt("GO_DHT_SERVER_HIGH_WATER_MARK", defaultHighWaterMark)
 	connmgrGracePeriod time.Duration = env.GetDuration("GO_DHT_SERVER_CONN_MGR_GRACE_PERIOD", defaultConnMgrGrace)
 	rendezvous         string        = env.Get("GO_DHT_SERVER_RENDEZVOUS", "")
-	enableRelayService bool          = env.GetBool("GO_DHT_SERVER_ENABLE_RELAY", defaultEnableRelay)
+	enableRelayService bool          = env.GetBool("GO_DHT_SERVER_ENABLE_RELAY", defaultEnableRelayService)
 )
 
 var (
@@ -50,7 +50,7 @@ func initConfig() {
 	flag.IntVar(&highWaterMark, "highWaterMark", highWaterMark, "High watermark for peer discovery")
 	flag.DurationVar(&connmgrGracePeriod, "connmgrGracePeriod", connmgrGracePeriod, "Grace period for connection manager")
 
-	flag.BoolVar(&enableRelayService, "enableRelay", enableRelayService, "Enable circuit relay")
+	flag.BoolVar(&enableRelayService, "enableRelayService", enableRelayService, "Enable circuit relay")
 
 	flag.StringVar(&httpAddr, "httpAddr", httpAddr, "Address to listen on")
 	flag.StringVar(&httpPort, "httpPort", httpPort, "Listen port for webserver")

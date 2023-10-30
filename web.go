@@ -17,7 +17,7 @@ func webHandler(w http.ResponseWriter, r *http.Request) {
 
 	doc := New()
 	doc.Title = fmt.Sprintf("Bootstrap peer for rendezvous %s", rendezvous)
-	doc.H1 = fmt.Sprintf("%s@%s", rendezvous, (h.ID().Pretty()))
+	doc.H1 = fmt.Sprintf("%s@%s", rendezvous, (h.ID().String()))
 	doc.Addrs = h.Addrs()
 	doc.AllConnectedPeers = allConnected
 	doc.PeersWithSameRendez = peersWithRendez
@@ -69,13 +69,13 @@ func (d *Document) String() string {
 
 	// Info leak? Not really important anyways.
 	// // Addresses
-	// if len(d.Addrs) > 0 {
-	// 	html += "<h2>Addresses</h2>\n<ul>"
-	// 	for _, addr := range d.Addrs {
-	// 		html += "<li>" + addr.String() + "</li>"
-	// 	}
-	// 	html += "</ul>"
-	// }
+	if len(d.Addrs) > 0 {
+		html += "<h2>Addresses</h2>\n<ul>"
+		for _, addr := range d.Addrs {
+			html += "<li>" + addr.String() + "</li>"
+		}
+		html += "</ul>"
+	}
 
 	// Peers with Same Rendezvous
 	if len(d.PeersWithSameRendez) > 0 {
