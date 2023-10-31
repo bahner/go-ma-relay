@@ -23,11 +23,7 @@ func main() {
 
 	options := []libp2p.Option{
 		libp2p.ListenAddrStrings(getListenAddrStrings(listenPort)...),
-	}
-
-	if enableRelayService {
-		log.Info("Enabling circuit relay service.")
-		options = append(options, libp2p.EnableRelayService())
+		libp2p.EnableRelayService(),
 	}
 
 	// Start the libp2p node

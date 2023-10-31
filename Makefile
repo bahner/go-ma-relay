@@ -1,10 +1,10 @@
 #!/usr/bin/make -ef
 
-NAME		= go-dht-bootstrap-peer
-VERSION		= 1.0.2
+NAME		= go-ma-relay
+VERSION		= 1.0.3
 GO_VERSION	= 1.21.3
 
-BUILD_IMAGE	?=golang:$(GO_VERSION)-alpine
+export BUILD_IMAGE	?= golang:$(GO_VERSION)-alpine
 GO					?= go$(GO_VERSION)
 PREFIX			?= /usr/local
 

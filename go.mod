@@ -1,4 +1,4 @@
-module github.com/bahner/go-dht-bootstrap-peer
+module github.com/bahner/go-ma-relay
 
 go 1.21
 
