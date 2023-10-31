@@ -16,7 +16,7 @@ const (
 	defaultListenPort         string        = "4001" // 0 = random
 	defaultHttpAddr           string        = "0.0.0.0"
 	defaultHttpPort           string        = "4000"
-	defaultRendezvous         string        = ""
+	defaultRendezvous         string        = "/ma/0.0.1"
 	defaultDiscoverySleep     time.Duration = time.Second * 10
 	defaultEnableRelayService bool          = false
 )
