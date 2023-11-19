@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/bahner/go-ma"
 	libp2p "github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/host"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -20,10 +22,12 @@ func main() {
 
 	ctx := context.Background()
 	wg := &sync.WaitGroup{}
+	keyset := GetKeyset()
 
 	options := []libp2p.Option{
 		libp2p.ListenAddrStrings(getListenAddrStrings(listenPort)...),
 		libp2p.EnableRelayService(),
+		libp2p.Identity(keyset.IPNSKey.PrivKey),
 	}
 
 	// Start the libp2p node
@@ -44,7 +48,7 @@ func main() {
 	log.Info("Kademlia DHT bootstrapped successfully.")
 
 	log.Debug("Starting DHT route discovery.")
-	go discoverDHTPeers(ctx, dhtInstance, rendezvous)
+	go discoverDHTPeers(ctx, dhtInstance, ma.RENDEZVOUS)
 	log.Info("Peer discovery started.")
 
 	http.HandleFunc("/", webHandler)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/bahner/go-ma"
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/multiformats/go-multiaddr"
@@ -16,8 +17,8 @@ func webHandler(w http.ResponseWriter, r *http.Request) {
 	peersWithRendez, otherPeers := categorizePeers(allConnected)
 
 	doc := New()
-	doc.Title = fmt.Sprintf("Bootstrap peer for rendezvous %s", rendezvous)
-	doc.H1 = fmt.Sprintf("%s@%s", rendezvous, (h.ID().String()))
+	doc.Title = fmt.Sprintf("Bootstrap peer for rendezvous %s", ma.RENDEZVOUS)
+	doc.H1 = fmt.Sprintf("%s@%s", ma.RENDEZVOUS, (h.ID().String()))
 	doc.Addrs = h.Addrs()
 	doc.AllConnectedPeers = allConnected
 	doc.PeersWithSameRendez = peersWithRendez
