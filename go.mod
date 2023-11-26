@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/bahner/go-ma v0.0.6-0.20231126000649-78330dbbdfd4
-	github.com/bahner/go-ma-actor v0.0.2-0.20231126194533-442ec8a19da5
+	github.com/bahner/go-ma-actor v0.0.2-0.20231126203021-f83822f230df
 	github.com/libp2p/go-libp2p v0.32.1
 	github.com/libp2p/go-libp2p-kad-dht v0.25.1
 	github.com/multiformats/go-multiaddr v0.12.0

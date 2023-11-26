@@ -22,3 +22,5 @@ arm64-*
 go.work
 go-*
 .env
+go-ma-relay
+.vscode

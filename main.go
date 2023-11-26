@@ -6,6 +6,7 @@ import (
 
 	"github.com/bahner/go-ma-actor/config"
 	"github.com/bahner/go-ma-actor/p2p"
+	"github.com/bahner/go-ma-actor/p2p/connmgr"
 	"github.com/bahner/go-ma-actor/p2p/dht"
 
 	libp2p "github.com/libp2p/go-libp2p"
@@ -15,22 +16,30 @@ import (
 )
 
 var (
-	h   host.Host
-	err error
+	h host.Host
 )
 
 func main() {
 
+	var err error
+
 	ctx := context.Background()
 	k := config.GetKeyset()
 
-	options := []libp2p.Option{
+	// Add the connection manager to the options
+	connMgr, err := connmgr.Init()
+	if err != nil {
+		log.Fatalf("p2p.Init: failed to create connection manager: %v", err)
+	}
+
+	p2pOpts := []libp2p.Option{
 		libp2p.EnableRelayService(),
 		libp2p.Identity(k.IPNSKey.PrivKey),
+		libp2p.ConnectionManager(connMgr),
 	}
 
 	// Start the libp2p node
-	h, err = libp2p.New(options...)
+	h, err = libp2p.New(p2pOpts...)
 	if err != nil {
 		log.Fatal(err)
 	}

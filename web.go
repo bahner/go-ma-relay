@@ -9,14 +9,28 @@ import (
 	p2p "github.com/bahner/go-ma-actor/p2p"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/multiformats/go-multiaddr"
+	log "github.com/sirupsen/logrus"
 )
 
 // Assuming you have initialized variables like `h` and `rendezvous` somewhere in your main function or globally
 
 func webHandler(w http.ResponseWriter, r *http.Request) {
+
 	allConnected := getLivePeerIDs(h)
-	peersWithRendez := p2p.GetConnectedPeers() // Means default timeout
+	if allConnected == nil {
+		log.Error("Failed to get connected peers.")
+		allConnected = peer.IDSlice{}
+	}
+	peersWithRendez := p2p.GetConnectedPeers(h)
+	if peersWithRendez == nil {
+		log.Error("Failed to get connected peers with rendezvous.")
+		peersWithRendez = make(map[string]*peer.AddrInfo)
+	}
 	peersWithRendezvous := getLivePeerIDsFromAddrInfos(peersWithRendez)
+	if peersWithRendezvous == nil {
+		log.Error("Failed to get connected peers with rendezvous.")
+		peersWithRendezvous = peer.IDSlice{}
+	}
 
 	doc := New()
 	doc.Title = fmt.Sprintf("Bootstrap peer for rendezvous %s", ma.RENDEZVOUS)
@@ -89,15 +103,6 @@ func (d *Document) String() string {
 		}
 		html += "</ul>"
 	}
-
-	// // Other Peers
-	// if len(d.OtherPeers) > 0 {
-	// 	html += fmt.Sprintf("<h2>Other Peers (%d)</h2>\n<ul>", len(d.OtherPeers))
-	// 	for _, peer := range d.OtherPeers {
-	// 		html += "<li>" + peer.String() + "</li>"
-	// 	}
-	// 	html += "</ul>"
-	// }
 
 	html += "</body>\n</html>"
 	return html
