@@ -54,12 +54,10 @@ func main() {
 	}
 
 	// Boostrap Kademlia DHT and wait for it to finish.
-	log.Debug("Starting DHT bootstrap.")
 	err = p2p.StartPeerDiscovery(ctx, h, dhtInstance)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Info("Kademlia DHT bootstrapped successfully.")
 
 	http.HandleFunc("/", webHandler)
 
