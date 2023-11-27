@@ -15,25 +15,23 @@ import (
 
 func webHandler(w http.ResponseWriter, r *http.Request) {
 
-	allConnected := p.Node.Network().Peers()
+	desiredPeers := config.GetDesiredPeers()
+
+	allConnected := p.GetAllConnectedPeers()
 	if allConnected == nil {
 		log.Error("Failed to get connected peers.")
 		allConnected = peer.IDSlice{}
 	}
-	peersWithRendez := p.GetConnectedPeers()
-	if peersWithRendez == nil {
-		log.Error("Failed to get connected peers with rendezvous.")
-		peersWithRendez = make(map[string]*peer.AddrInfo)
-	}
-	peersWithRendezvous := getLivePeerIDsFromAddrInfos(peersWithRendez)
+	peersWithRendezvous := p.GetConnectedProtectedPeers()
 	if peersWithRendezvous == nil {
 		log.Error("Failed to get connected peers with rendezvous.")
 		peersWithRendezvous = peer.IDSlice{}
 	}
 
 	doc := New()
-	doc.Title = fmt.Sprintf("Bootstrap peer for rendezvous %s", ma.RENDEZVOUS)
-	doc.H1 = fmt.Sprintf("%s@%s", ma.RENDEZVOUS, (p.Node.ID().String()))
+	doc.Title = fmt.Sprintf("Bootstrap peer for rendezvous %s. Version %s ", ma.RENDEZVOUS, VERSION)
+	doc.H1 = fmt.Sprintf("%s@%s v%s", ma.RENDEZVOUS, (p.Node.ID().String()), VERSION)
+	doc.H1 += fmt.Sprintf("<br>Found %d/%d peers with rendezvous %s", len(peersWithRendezvous), desiredPeers, ma.RENDEZVOUS)
 	doc.Addrs = p.Node.Addrs()
 	if allConnected == nil {
 		allConnected = peer.IDSlice{}
@@ -63,13 +61,13 @@ func New() *Document {
 
 func (d *Document) String() string {
 
-	discoverySleep := config.GetDiscoveryTimeout()
+	retryInterval := config.GetDiscoveryRetryInterval()
 
 	html := "<!DOCTYPE html>\n<html>\n<head>\n"
 	if d.Title != "" {
 		html += "<title>" + d.Title + "</title>\n"
 	}
-	html += fmt.Sprintf(`<meta http-equiv="refresh" content="%d">`, int(discoverySleep.Seconds()))
+	html += fmt.Sprintf(`<meta http-equiv="refresh" content="%d">`, int(retryInterval.Seconds()))
 	html += "</head>\n<body>\n"
 	if d.H1 != "" {
 		html += "<h1>" + d.H1 + "</h1>\n"

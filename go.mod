@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/bahner/go-ma v0.0.6-0.20231126211854-c1323073bd64
-	github.com/bahner/go-ma-actor v0.0.2-0.20231127050826-06e733cc8d15
+	github.com/bahner/go-ma-actor v0.0.2
 	github.com/libp2p/go-libp2p v0.32.1
 	github.com/multiformats/go-multiaddr v0.12.0
 	github.com/sirupsen/logrus v1.9.3

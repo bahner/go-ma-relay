@@ -1,7 +1,7 @@
 #!/usr/bin/make -ef
 
 NAME		= go-ma-relay
-VERSION		= v1.0.6
+VERSION		= v2.0.0
 GO_VERSION	= 1.21.4
 
 export BUILD_IMAGE	?= golang:$(GO_VERSION)-alpine

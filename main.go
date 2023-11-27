@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"net/http"
 	"time"
 
@@ -18,6 +19,10 @@ var (
 
 func main() {
 
+	flag.Parse()
+	config.InitLogging()
+	config.InitKeyset()
+
 	var err error
 
 	ctx := context.Background()
@@ -26,7 +31,7 @@ func main() {
 		libp2p.EnableRelayService(),
 	}
 
-	p, err := p2p.Init(nil, p2pOpts...)
+	p, err = p2p.Init(nil, p2pOpts...)
 	if err != nil {
 		log.Fatalf("p2p.Init: failed to initialize p2p: %v", err)
 	}

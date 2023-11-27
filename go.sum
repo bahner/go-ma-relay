@@ -11,8 +11,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239/go.mod h1:2FmKhYUyUczH0OGQWaF5ceTx0UBShxjsH6f8oGKYe2c=
 github.com/bahner/go-ma v0.0.6-0.20231126211854-c1323073bd64 h1:dBGw1zZm46xJWUnVDT9BAbL8GUu8AwjWbP5Ddc7yRS4=
 github.com/bahner/go-ma v0.0.6-0.20231126211854-c1323073bd64/go.mod h1:l9ty9QbOZfRUtovECXES7a01Su7xBYIBphFak1TOjVs=
-github.com/bahner/go-ma-actor v0.0.2-0.20231127050826-06e733cc8d15 h1:c5Uu6dFQmz27la56Q6WXCb1kJo74XVG+mrQUGL5iSxs=
-github.com/bahner/go-ma-actor v0.0.2-0.20231127050826-06e733cc8d15/go.mod h1:rSnnEyIuwwGfmcLzqqwl6NDMS5MF3LcQNYDNgnFdi2I=
+github.com/bahner/go-ma-actor v0.0.2 h1:1LxQnaRdZUXqrr9Ys3Rgfg15M4RGizG6OOvuJC8DNME=
+github.com/bahner/go-ma-actor v0.0.2/go.mod h1:rSnnEyIuwwGfmcLzqqwl6NDMS5MF3LcQNYDNgnFdi2I=
 github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
 github.com/benbjohnson/clock v1.3.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
 github.com/benbjohnson/clock v1.3.5 h1:VvXlSJBzZpA/zum6Sj74hxwYI2DIxRWuNIoXAzHZz5o=

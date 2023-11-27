@@ -34,3 +34,19 @@ func init() {
 	// Assemble vars for http server
 	httpSocket = httpAddr + ":" + httpPort
 }
+
+func GetListenPort() string {
+	return listenPort
+}
+
+func GetHttpSocket() string {
+	return httpSocket
+}
+
+func GetHttpAddr() string {
+	return httpAddr
+}
+
+func GetHttpPort() string {
+	return httpPort
+}
