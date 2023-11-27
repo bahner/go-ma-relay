@@ -6,7 +6,6 @@ import (
 
 	"github.com/bahner/go-ma"
 	"github.com/bahner/go-ma-actor/config"
-	p2p "github.com/bahner/go-ma-actor/p2p"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/multiformats/go-multiaddr"
 	log "github.com/sirupsen/logrus"
@@ -16,12 +15,12 @@ import (
 
 func webHandler(w http.ResponseWriter, r *http.Request) {
 
-	allConnected := getLivePeerIDs(h)
+	allConnected := p.Node.Network().Peers()
 	if allConnected == nil {
 		log.Error("Failed to get connected peers.")
 		allConnected = peer.IDSlice{}
 	}
-	peersWithRendez := p2p.GetConnectedPeers(h)
+	peersWithRendez := p.GetConnectedPeers()
 	if peersWithRendez == nil {
 		log.Error("Failed to get connected peers with rendezvous.")
 		peersWithRendez = make(map[string]*peer.AddrInfo)
@@ -34,8 +33,8 @@ func webHandler(w http.ResponseWriter, r *http.Request) {
 
 	doc := New()
 	doc.Title = fmt.Sprintf("Bootstrap peer for rendezvous %s", ma.RENDEZVOUS)
-	doc.H1 = fmt.Sprintf("%s@%s", ma.RENDEZVOUS, (h.ID().String()))
-	doc.Addrs = h.Addrs()
+	doc.H1 = fmt.Sprintf("%s@%s", ma.RENDEZVOUS, (p.Node.ID().String()))
+	doc.Addrs = p.Node.Addrs()
 	if allConnected == nil {
 		allConnected = peer.IDSlice{}
 	}

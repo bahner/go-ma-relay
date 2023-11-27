@@ -3,20 +3,17 @@ package main
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/bahner/go-ma-actor/config"
 	"github.com/bahner/go-ma-actor/p2p"
-	"github.com/bahner/go-ma-actor/p2p/connmgr"
-	"github.com/bahner/go-ma-actor/p2p/dht"
 
 	libp2p "github.com/libp2p/go-libp2p"
-	p2pDHT "github.com/libp2p/go-libp2p-kad-dht"
-	"github.com/libp2p/go-libp2p/core/host"
 	log "github.com/sirupsen/logrus"
 )
 
 var (
-	h host.Host
+	p *p2p.P2P
 )
 
 func main() {
@@ -24,40 +21,19 @@ func main() {
 	var err error
 
 	ctx := context.Background()
-	k := config.GetKeyset()
-
-	// Add the connection manager to the options
-	connMgr, err := connmgr.Init()
-	if err != nil {
-		log.Fatalf("p2p.Init: failed to create connection manager: %v", err)
-	}
 
 	p2pOpts := []libp2p.Option{
 		libp2p.EnableRelayService(),
-		libp2p.Identity(k.IPNSKey.PrivKey),
-		libp2p.ConnectionManager(connMgr),
 	}
 
-	// Start the libp2p node
-	h, err = libp2p.New(p2pOpts...)
+	p, err := p2p.Init(nil, p2pOpts...)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("p2p.Init: failed to initialize p2p: %v", err)
 	}
-	log.Info("libp2p node created: ", h.ID().String())
-
-	// We need special options here to specify that we want to
-	// be a server node
-	dhtInstance, err := dht.Init(ctx, h,
-		p2pDHT.Mode(p2pDHT.ModeServer))
-	if err != nil {
-		log.Fatalf("Failed to create DHT instance: %v", err)
-	}
+	log.Info("libp2p node created: ", p.Node.ID())
 
 	// Boostrap Kademlia DHT and wait for it to finish.
-	err = p2p.StartPeerDiscovery(ctx, h, dhtInstance)
-	if err != nil {
-		log.Fatal(err)
-	}
+	go discoveryLoop(ctx, p)
 
 	http.HandleFunc("/", webHandler)
 
@@ -67,4 +43,16 @@ func main() {
 		log.Fatal(err)
 	}
 
+}
+
+func discoveryLoop(ctx context.Context, p *p2p.P2P) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			p.DHT.DiscoverPeers()
+			time.Sleep(config.GetDiscoveryRetryInterval())
+		}
+	}
 }
